@@ -1,0 +1,10 @@
+require 'gameParser'
+require 'game'
+
+game = Game.create()
+
+puts game
+game.startGame()
+sleep(2)
+game.stopClock
+puts game
