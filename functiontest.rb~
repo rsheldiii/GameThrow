@@ -1,10 +1,16 @@
-require 'gameParser'
-require 'game'
+require './gameParser.rb'
+require './game.rb'
 
+
+derp = Regexp.new(/(?<derp>.*).*?/)
+puts "line 6"
+matchdata = derp.match("test")
+print matchdata["test"]
 game = Game.create()
+game.startingLineup
+
 
 puts game
-game.startGame()
-sleep(2)
-game.stopClock
-puts game
+
+game.start
+

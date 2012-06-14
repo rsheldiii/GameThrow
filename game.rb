@@ -1,3 +1,6 @@
+#TODO: get refamiliarized with this code.
+#I really need a firm design for the direction of this program. I need to enumerate a feature set and code that feature set into a program
+
 
 require './player.rb'
 require './team.rb'
@@ -8,7 +11,7 @@ class Game
   private_class_method :new
   def Game.create()
     puts "creating game"
-    @lastLine = "flerp"
+    @lastLine = ""
     puts @lastLine
     puts "enter the name and numbers of the home team in pairs, ie '33,John Rogers,42,Michael Smith' etc without the quotes"
     hometeam = "1,first entry,2,second entry,3,third entry,4,fourth entry,5,fifth entry"#gets.chomp
@@ -27,12 +30,12 @@ class Game
     hteamplayers = []
     ateamplayers = []
 
-    hteamplayerarr.each {|arr| hteamplayers.push(Player.new(arr[0],arr[1]))}
+    hteamplayerarr.each {|arr| hteamplayers.push(Player.new(arr[0],arr[1]))}#arrays of the player's name and number
     ateamplayerarr.each {|arr| ateamplayers.push(Player.new(arr[0],arr[1]))}
 
     
-    parser = Parser.new(optfile)
-    hometeam = Team.new(hteamplayers)
+    parser = Parser.new(optfile)#for parsing
+    hometeam = Team.new(hteamplayers)#team objects initialized with the player arrays we provided
     awayteam = Team.new(ateamplayers)
     return new(hometeam,awayteam,parser)
   end
@@ -151,13 +154,6 @@ class Game
     end
   end
 
-  def undo(gameclosure)
-
-    @lastLine = @lastLine.gsub(/^u*/,'')#if we already negated this string, kill the u so we can add it again naively
-    @lastLine = 'u'+@lastLine.lstrip
-    callParse(@lastLine) if @lastLine.chomp != "u"
-  end
-
   def callParse(line)
     matchdata = @parser.parse(line)#prepend u after all whitespace is removed just in case
     if matchdata == nil
@@ -171,5 +167,13 @@ class Game
     end
     @lastLine = line if undoable == true
   end
+  
+  def undo(gameclosure)
+
+    @lastLine = @lastLine.gsub(/^u*/,'')#if we already negated this string, kill the u so we can add it again naively
+    @lastLine = 'u'+@lastLine.lstrip
+    callParse(@lastLine) if @lastLine.chomp != "u"
+  end
+
 
 end
