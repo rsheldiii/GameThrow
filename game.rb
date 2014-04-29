@@ -1,60 +1,80 @@
 require './parser.rb'
 require './court.rb'
+require './player.rb'
 
 #this is the enclosure for the more pure game, player, and team classes, that prompts for input and checks them against the parser
 class Game
  	def initialize()
-		court = Court.new()
-		court.startingLineup()
-		court.start()
+ 		@cmdStack = []
+		home,away = createTeams()
+		@court = Court.new(home,away)
+		@parser = Parser.new()
+
+		startingLineup()
+		tipoff()
+		play()
+	end
+
+
+	#team creation block
+	def createTeams()
+		puts "creating home team"
+		home = createTeam()
+		puts "creating away team"
+		away = createTeam()
+		[home,away]
+	end
+
+	def createTeam()
+		team = []
+		while true do
+			a = createPlayer()
+			break if !a
+			team << a
+		end
+		Team.new(team)
+	end
+
+	def createPlayer()
+		puts "enter player number or enter to escape"
+		num = gets.chomp
+		return false if num.length == 0
+		puts "enter player name"
+		name = gets.chomp
+		Player.new(num,name)
 	end
 
 
 
  	def startingLineup()
-	    begin
-	      puts "enter the starting lineup for the home team separated by commas"
-	      temp = ['1','2','3','4','5']#gets.chomp.scan(/[^,]+/)
-	      bool = court.home.reset(temp,false)
-	    end while bool == false
-	    
-	    begin
-	      puts "enter the starting lineup for the away team separated by commas"
-	      temp = ['6','7','8','9','10']#gets.chomp.scan(/[^,]+/)	
-	      bool = court.away.reset(temp,false)
-	    end while bool == false
+ 		puts "enter the starting lineup numbers for the home team"
+ 		h = @court.home.reset((1..5).collect{|x| gets.chomp},@court.clock?) until h
+  		puts "enter the starting lineup numbers for the away team"
+ 		a = @court.away.reset((1..5).collect{|x| gets.chomp},@court.clock?) until a
  	end
 
-	def start()
-	    while @possession.possession != "Home" and @possession.possession != "Away"
-	      puts @possession.possession
-	      puts "possession: home or away? clock starts after entry"
-	      @possession.set(gets[0,4])
-	    end
-	    startClock(nil)
-	    puts "clock started, game commence"
-	  #start the game
+
+	def play()
 	    while line = gets
 	      callParse(line)
 	    end
 	end
 
 	def callParse(line)
-		matchdata = @parser.parse(line)#prepend u after all whitespace is removed just in case
+		matchdata = @parser.parse(line)
 		if matchdata == nil
-		  puts "no match found, try again" 
-		  
+		  puts "unrecognized command. h for help" 
 		else  
-		  if matchdata["regexp"].names.include?("undo") == true
-		    undo = matchdata["regexp"]["undo"] == 'u'? true:false
-		  end
-		   undoable =  send(matchdata["function"],regex.new(@possession.possession, matchdata["regexp"], undo))
+		   send(matchdata["function"],matchdata["regexp"])
 		end
-		@cmdStack = line if undoable == true
+		@cmdStack << line
 	end
 
   #this section contains regex functions. these all filter back through the object map until they do all they are supposed to do
 
+	def tipoff()
+	    @court.tipoff()
+	end
 
   def shot(regex)
     court.shot(regex);
@@ -82,4 +102,13 @@ class Game
   def OB(regex)
   	court.OB()
   end
+
+  def help(regex)
+  	puts "this isnt very helpful yet."
+  	@parser.keywordMap.each {|keyword,regex| puts keyword + ": " + regex}
+  end
 end
+
+
+
+a = Game.new()

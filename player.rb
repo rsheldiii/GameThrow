@@ -12,17 +12,16 @@ class Player
               :time,
               :totalTime
 
-  def to_s
-    "name: " + @name.to_s + " number: " +  @number.to_s
-  end
-
   def initialize(number,name)
     @freeThrows, @freeThrowAttempts,@personalFouls,@technicalFouls,@threePointers,@threePointerAttempts, @twoPointers, @twoPointerAttempts, @totalTime = 0,0,0,0,0,0,0,0,0
     @name = name
     @number = number
   end
 
-  #starttime should only be called first, or after endtime. no methods are exposed otherwise, and thus the functioning of the class relies on it
+  def to_s
+    "name: " + @name.to_s + " number: " +  @number.to_s
+  end
+
   def startTime()
     if @time != nil
       puts "ERROR: time in " + @number.to_s + " off, not adding"
@@ -37,6 +36,7 @@ class Player
       @time = nil
     else
       puts "error with players time. player: " + self
+  	end
   end
 
   def shot(undo,type,successful)
@@ -58,12 +58,12 @@ class Player
     end
   end
 
-  def personalFoul(undo):
+  def personalFoul(undo)
     @personalFouls += undo ? -1 : 1
     puts "player " + self + " has 5 personal fouls" if @personalFouls == 5
   end
 
-  def technicalFoul(undo):
+  def technicalFoul(undo)
     @technicalFouls += undo ? -1 : 1
   end
 

@@ -29,39 +29,43 @@ class Team
       goingIn.starttime() if isClockOn
     else
       puts "max size reached, please swap players. team:" + self
-  end
-
-  def reset(numbers,isClockOn)
-    numbers.each do |number|
-      if @players[number] == nil 
-        puts number.to_s + "is not in there"
-        return false
-      end
-    end
-
-    if numbers.length == 5#@playersOnCourt.length == 5 is assumed
-      @playersOnCourt.each do |player|
-        player.stopTime()#switchplayer would be nice here but we are mutating the list. check back to see if it's possible later TODO
-      end
-      @playersOnCourt = []
-    
-      numbers.each do |number|
-        self.addPlayer(@players[number],isClockOn)
-      end
-      return true
-    else 
-      puts "incorrect number of players on court. please try again"
-      return false
     end
   end
+
+	def set(numbers,isClockOn)
+		numbers.each do |number|
+			if @players[number] == nil 
+			  puts number.to_s + "is not in there"
+			  return false
+			end
+		end
+
+	    if numbers.length == 5#@playersOnCourt.length == 5 is assumed
+	      @playersOnCourt.each do |player|
+	        player.stopTime()#switchplayer would be nice here but we are mutating the list. check back to see if it's possible later TODO
+	      end
+	      @playersOnCourt = []
+	    
+	      numbers.each do |number|
+	        self.addPlayer(@players[number],isClockOn)
+	      end
+	      return true
+	    else 
+	      puts "incorrect number of players on court. please try again"
+	      return false
+	    end
+  	end
+
+  	def reset(numbers,isClockOn)
+  		set(numbers,isClockOn)
+  	end
   
   def to_s
     out = ""
     @players.each do |number,player|
-
       out += player.to_s + "; "
     end
-    return out.chomp('; ')
+    out.chomp('; ')
   end
 
   def findPlayer(number)

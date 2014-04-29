@@ -1,4 +1,5 @@
 class Parser
+	attr_reader :keywordMap
   def initialize()
     @keywordMap = {}
     #actions like shooting that pertain to a single player
@@ -28,6 +29,7 @@ class Parser
         @keywordMap["resetPossession"] = Regexp.new('\b(?<undo>u)?ps(?<possession>[ah])\b')
       # "undo"
         @keywordMap["undo"] = Regexp.new('\bu\b')
+        @keywordMap["help"] = Regexp.new('\bh\b')
   end
 
   def parse(line)

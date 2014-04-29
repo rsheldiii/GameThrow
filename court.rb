@@ -5,21 +5,24 @@ require './player.rb'
 require './team.rb'
 require './possession.rb'
 
-class Game
+class Court
 
-  private_class_method :new
+	attr_reader :clock,
+				:home,
+				:away,
+				:possession
 
-  def initialize(home,away,optfile)
+  def initialize(home,away)
     @cmdStack = []
 
-    @parser = Parser.new(optfile)#for parsing
+    @parser = Parser.new()
 
-    @home = Team.new(home)
-    @away = Team.new(away)
+    @home = home
+    @away = away
 
     @possession = Possession.new()
 
-    @clockRunning = false
+    @clock = false
   end
 
   def to_s
@@ -27,13 +30,15 @@ class Game
   end
 
 
-
+  def clock?
+  	@clock
+  end
 
 
   #regex functions
 
   def stopClock(regex)
-    if @clockRunning
+    if @clock
       puts "stopping clock"
       @home.stopClock()
       @away.stopClock()
@@ -43,7 +48,7 @@ class Game
   end
 
   def startClock(regex)
-    if !@clockRunning
+    if !@clock
       puts "starting clock"
       @home.startClock()
       @away.startClock()
@@ -83,5 +88,15 @@ class Game
     stopClock()
     turnover()
   end
+
+  def tipoff()
+	while !@possession.possession
+	    puts "tipoff possession: [h]ome or [a]way?"
+	    @possession.set(gets[0])
+	end
+	startClock(nil)
+	puts "clock started"
+  end
+
 
 end

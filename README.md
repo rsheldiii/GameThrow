@@ -12,13 +12,13 @@ currently in Alpha, undergoing a major rewrite for simplicity, efficiency, and r
 #CURRENT STRUCTURE:
 currently the application is structured as such (classmap):
 
-- game
-    - parser
-    - court
-        - home team
-            - [players]
-        - away team
-            - [players]
+> game
+>> parser
+>> court
+>>> home team
+>>>> [players]
+>>> away team
+>>>> [players]
 
 
 game includes all game-related, top-level functions, like the command stack, command functions, and functions like start() which sets the field for a new game to start.
