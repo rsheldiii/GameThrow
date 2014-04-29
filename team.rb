@@ -2,49 +2,46 @@ require './player.rb'
 
 class Team
   attr_reader :teamRebounds, :turnOvers
-  public
+
   def initialize(players)
+    #expects player array
     @teamRebounds, @turnOvers = 0
+
     @players = {}
+    players.each do |player|
+      @players[player.number] = player
+    end 
+
     @playersOnCourt = []
-      players.each do |player|
-        @players[player.number] = player
-      end
-    self
   end
 
 
-  def switchPlayer(goingIn, goingOut)
-    self.addPlayer(goingIn)
-    self.remPlayer(goingOut)
-  end
+  def switchPlayer(goingIn, goingOut, isClockOn)#what's nice is with the new classmap model, court can feed isClockOn to all these functions instead of having it be a global kinda thing
+    self.addPlayer(@players[goingIn],isClockOn)
 
-  public
-  #TODO: put a provision in game to tell when a clock is turned on. if it is not, pass false to the boolean in these functions
-  #players should never be added when the clock is on. however, if this is so, this boolean will cover it. Otherwise, the clock should be turned on when play resumes, automatically turning on each players clock
-  def addPlayer(goingIn, isClockOn)
-    @playersOnCourt.push(goingIn)
-    goingIn.starttime() if isClockOn
-  end
-
-  def remPlayer(goingOut, isClockOn)#to match form, doesn't hurt if clock is already off
-    @playersOnCourt.remove(goingOut, isClockOn)
+    @playersOnCourt.remove(@players[goingOut])
     goingOut.stoptime()
   end
 
+  def addPlayer(goingIn, isClockOn)#addplayer allows us to take care of the edge case of starting with no 
+    if @playersOnCourt.size <5
+      @playersOnCourt.push(goingIn)
+      goingIn.starttime() if isClockOn
+    else
+      puts "max size reached, please swap players. team:" + self
+  end
+
   def reset(numbers,isClockOn)
-    puts numbers.length
-    bool = true
     numbers.each do |number|
-      if @players[number] == nil
-        bool = false 
+      if @players[number] == nil 
         puts number.to_s + "is not in there"
+        return false
       end
     end
-    puts bool
-    if numbers.length == 5 and bool != false
+
+    if numbers.length == 5#@playersOnCourt.length == 5 is assumed
       @playersOnCourt.each do |player|
-        self.remPlayer(player)
+        player.stopTime()#switchplayer would be nice here but we are mutating the list. check back to see if it's possible later TODO
       end
       @playersOnCourt = []
     
@@ -52,8 +49,9 @@ class Team
         self.addPlayer(@players[number],isClockOn)
       end
       return true
-    else puts "not 5 players, try again"
-    return false
+    else 
+      puts "incorrect number of players on court. please try again"
+      return false
     end
   end
   
@@ -63,7 +61,7 @@ class Team
 
       out += player.to_s + "; "
     end
-    return out[0,out.length-2]
+    return out.chomp('; ')
   end
 
   def findPlayer(number)
@@ -80,6 +78,18 @@ class Team
     @playersOnCourt.each do |player|
       player.startTime()
     end
+  end
+
+
+
+
+
+
+  #regex functions
+
+
+  def shot(regex)
+    findPlayer(regex['number']).shot(regex)
   end
 
   
