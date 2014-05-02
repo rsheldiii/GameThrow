@@ -6,6 +6,9 @@ require './player.rb'
 class Game
  	def initialize()
  		@cmdStack = []
+ 		@commandList = {
+ 			#TODO: add commands here and relate them to the top level function they fire off
+ 		}
 		home,away = createTeams()
 		@court = Court.new(home,away)
 		@parser = Parser.new()
@@ -104,8 +107,7 @@ class Game
   end
 
   def help(regex)
-  	puts "this isnt very helpful yet."
-  	@parser.keywordMap.each {|keyword,regex| puts keyword + ": " + regex}
+  	@parser.keywordMap.each {|command| puts command.command + ":" + command.help + "\n" + command}
   end
 end
 
